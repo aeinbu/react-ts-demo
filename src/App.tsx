@@ -1,26 +1,108 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react'
 
-const App: React.FC = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import './App.scss'
+// import './Ugly.css'
+import { BatchList } from "./Components/BatchList"
+import { Actions } from "./Components/Actions"
+import { TenantSelector } from "./Components/TenantSelector"
+import { BatchItemSelector } from "./Components/BatchItemSelector"
+
+import { RoutingRoot, IBatchItemIdentifier } from "./Roots/RoutingRoot"
+
+import { BatchContext, IBatchContext } from "./Contexts/BatchContext"
+import { TenantContext, ITenantContext } from "./Contexts/TenantContext"
+
+
+export const App : React.FC = () => <TenantFrame />
+
+
+interface ITenantFrameState {
+    tenantId: string
 }
 
-export default App;
+
+const TenantFrame : React.FC = () => {
+    const [state, setState ] = useState<ITenantFrameState>({ tenantId: "" })
+
+    const diagnostics = { tenantId: state.tenantId }
+    const tenantContext : ITenantContext = {
+        tenantId: state.tenantId,
+        switchTenant: (tenantId) => setState({ ...state, tenantId }),
+        routingRoot: new RoutingRoot(diagnostics)
+    }
+
+    return (
+        <TenantContext.Provider value={tenantContext}>{
+            state.tenantId === ""
+                ? <TenantIsNotSelected />
+                : <TenantIsSelected key={state.tenantId} />
+        }</TenantContext.Provider>
+    )
+}
+
+
+const TenantIsNotSelected : React.FC = () => <div className="large">
+    Please select tenant: <TenantSelector />
+</div>
+
+
+const TenantIsSelected : React.FC = () => <>
+    <section>
+        Current tenant: <TenantSelector />
+    </section>
+    <div className="spacer half-line"></div>
+    <BatchFrame />
+</>
+
+
+
+
+interface IBatchFrameState {
+    batch: Array<IBatchItemIdentifier>
+}
+
+const BatchFrame : React.FC = () => {
+    const [state, setState] = useState<IBatchFrameState>({ batch: [] })
+
+    const batchContext : IBatchContext = {
+        batch: state.batch,
+        modifyBatch: (batch) => setState({ ...state, batch })
+    }
+
+    return (
+        <BatchContext.Provider value={batchContext}>{
+            state.batch.length === 0
+                ? <BatchIsEmpty />
+                : <BatchIsNotEmpty />
+        }</BatchContext.Provider>
+    )
+}
+
+
+const BatchIsEmpty : React.FC = () => <section>
+    <BatchItemSelector />
+</section>
+
+
+const BatchIsNotEmpty : React.FC = () => <>
+    <section className="main-grid">
+        <section className="panel">
+            <h2 className="heading" >Batch items</h2>
+            <div className="body">
+                <BatchList />
+            </div>
+        </section>
+        <section className="panel">
+            <h2 className="heading">Middle panel</h2>
+            <div className="body">
+            </div>
+        </section>
+        <section className="panel">
+            <h2 className="heading">Actions</h2>
+            <div className="body">
+                <Actions />
+            </div>
+        </section>
+    </section>
+</>
+

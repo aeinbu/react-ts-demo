@@ -1,0 +1,33 @@
+/* style */
+body {
+    font-family: 'comic sans ms';
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: fantasy;
+}
+.panel {
+    border: solid thin gray;
+    border-radius: 20px;
+    box-shadow: 3px 3px 6px blue, 6px 6px 6px red;
+}
+
+.panel>.heading {
+    background: repeating-linear-gradient(135deg, orange 0, orange 10px, transparent 10px, transparent 20px) repeat,
+    repeating-linear-gradient(45deg, lightgray 0, lightgray 10px, transparent 10px, transparent 20px) repeat,
+    linear-gradient(90deg, red, green, blue) repeat;
+    color: white;
+    text-shadow: 3px 3px 3px black;
+    box-shadow: 0 0 .5em inset black;
+}
+
+
+.panel:nth-child(3n + 1) {
+    transform: rotate(.5deg);
+}
+.panel:nth-child(3n + 2) {
+    transform: rotate(-.7deg);
+}
+.panel:nth-child(3n + 3) {
+    transform: rotate(.4deg);
+}
